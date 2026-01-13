@@ -156,6 +156,8 @@ CORS_ALLOWED_ORIGINS = [
     "http://10.2.0.2:5173",
     "http://192.168.1.103:5173",
     "https://smart-indiahackathon2025.vercel.app",
+    "http://localhost:3000",
+    "http://192.168.1.4:3000",
 ]
 CORS_ALLOW_HEADERS = ['*']
 
@@ -175,6 +177,8 @@ CSRF_TRUSTED_ORIGINS = [
     "http://10.2.0.2:5173",
     "http://192.168.1.103:5173",
     "https://smart-indiahackathon2025.vercel.app",
+    "http://localhost:3000",
+    "http://192.168.1.4:3000",
 ]
 
 CORS_ALLOW_METHODS = [
@@ -186,17 +190,27 @@ CORS_ALLOW_METHODS = [
     'PUT',
 ]
 
+from datetime import timedelta
+
+SIMPLE_JWT = {
+    "ACCESS_TOKEN_LIFETIME": timedelta(minutes=5),   # short-lived
+    "REFRESH_TOKEN_LIFETIME": timedelta(days=7),     # long-lived
+    "ROTATE_REFRESH_TOKENS": True,                  # issue new refresh token on each use
+    "BLACKLIST_AFTER_ROTATION": True,               # invalidate old refresh tokens
+}
+
 
 REST_FRAMEWORK = {
-    'DEFAULT_AUTHENTICATION_CLASSES': [
-        'rest_framework_simplejwt.authentication.JWTAuthentication',
-        'rest_framework.authentication.SessionAuthentication',
-        'rest_framework.authentication.BasicAuthentication',
-    ],
-    'DEFAULT_PERMISSION_CLASSES': [
-        'rest_framework.permissions.AllowAny',
-    ],
+    "DEFAULT_AUTHENTICATION_CLASSES": (
+        "WAGMIBackend.authentication.CookieJWTAuthentication",
+        "rest_framework_simplejwt.authentication.JWTAuthentication",
+    ),
+    "DEFAULT_PERMISSION_CLASSES": (
+        "rest_framework.permissions.IsAuthenticated",
+    ),
 }
+
+
 
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
