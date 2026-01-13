@@ -31,7 +31,7 @@ import { useToast } from "@/hooks/use-toast"
 export default function ProductPage() {
   const params = useParams()
   const router = useRouter()
-  const { getProductById, products } = useProducts()
+  const { getProductById, products, getProductVariants, findProductByVariant } = useProducts()
   const { addToCart } = useCart()
   const { toast } = useToast()
 
@@ -55,6 +55,53 @@ export default function ProductPage() {
       setSelectedWeight(product.weights?.[0] || product.weight || "")
     }
   }, [product])
+
+  // Get all variants of this product
+  const productVariants = product ? getProductVariants(product.name, product.brand) : []
+  
+  // Get unique flavors and weights from all variants
+  const availableFlavors = [...new Set(productVariants.map((v) => v.flavor).filter(Boolean))]
+  const availableWeights = [...new Set(productVariants.map((v) => v.weight).filter(Boolean))]
+
+  // Handle flavor selection - navigate to matching product
+  const handleFlavorChange = (flavor: string) => {
+    if (!product) return
+    setSelectedFlavor(flavor)
+    
+    // Find product with same weight but new flavor
+    const currentWeight = product.weight || ""
+    const matchingProduct = findProductByVariant(product.name, product.brand, flavor, currentWeight)
+    
+    if (matchingProduct && matchingProduct.id !== product.id) {
+      router.push(`/product/${matchingProduct.id}`)
+    } else {
+      // If no exact match, find any product with this flavor
+      const anyFlavorMatch = productVariants.find((v) => v.flavor === flavor)
+      if (anyFlavorMatch && anyFlavorMatch.id !== product.id) {
+        router.push(`/product/${anyFlavorMatch.id}`)
+      }
+    }
+  }
+
+  // Handle weight selection - navigate to matching product
+  const handleWeightChange = (weight: string) => {
+    if (!product) return
+    setSelectedWeight(weight)
+    
+    // Find product with same flavor but new weight
+    const currentFlavor = product.flavors?.[0]?.name || ""
+    const matchingProduct = findProductByVariant(product.name, product.brand, currentFlavor, weight)
+    
+    if (matchingProduct && matchingProduct.id !== product.id) {
+      router.push(`/product/${matchingProduct.id}`)
+    } else {
+      // If no exact match, find any product with this weight
+      const anyWeightMatch = productVariants.find((v) => v.weight === weight)
+      if (anyWeightMatch && anyWeightMatch.id !== product.id) {
+        router.push(`/product/${anyWeightMatch.id}`)
+      }
+    }
+  }
 
   if (!product) {
     return (
@@ -111,11 +158,6 @@ export default function ProductPage() {
     .filter((p) => p.id !== product.id)
     .sort((a, b) => b.rating - a.rating)
     .slice(0, 8)
-
-  // Get flavor names for display
-  const flavorOptions = Array.isArray(product.flavors)
-    ? product.flavors.map((f) => (typeof f === "string" ? { name: f, price: product.price } : f))
-    : [{ name: product.flavors as string, price: product.price }]
 
   return (
     <div className="min-h-screen bg-background">
@@ -214,45 +256,72 @@ export default function ProductPage() {
             <p className="text-sm text-muted-foreground">Inclusive of all taxes</p>
 
             {/* Flavor Selection */}
-            {flavorOptions.length > 0 && (
+            {availableFlavors.length > 0 && (
               <div>
-                <h3 className="font-semibold text-foreground mb-3">Choose Flavor</h3>
+                <h3 className="font-semibold text-foreground mb-3">
+                  Choose Flavor 
+                  <span className="text-sm font-normal text-muted-foreground ml-2">
+                    ({availableFlavors.length} options)
+                  </span>
+                </h3>
                 <div className="flex flex-wrap gap-2">
-                  {flavorOptions.map((flavor) => (
-                    <button
-                      key={flavor.name}
-                      onClick={() => setSelectedFlavor(flavor.name)}
-                      className={`px-4 py-2 rounded-lg border text-sm transition-all ${
-                        selectedFlavor === flavor.name
-                          ? "border-primary bg-primary/10 text-primary"
-                          : "border-border text-muted-foreground hover:border-primary/50"
-                      }`}
-                    >
-                      {flavor.name}
-                    </button>
-                  ))}
+                  {availableFlavors.map((flavor) => {
+                    const currentFlavor = product.flavors?.[0]?.name || ""
+                    const isSelected = currentFlavor === flavor
+                    return (
+                      <button
+                        key={flavor}
+                        onClick={() => handleFlavorChange(flavor)}
+                        className={`px-4 py-2 rounded-lg border text-sm transition-all ${
+                          isSelected
+                            ? "border-primary bg-primary/10 text-primary font-medium"
+                            : "border-border text-muted-foreground hover:border-primary/50 hover:bg-primary/5"
+                        }`}
+                      >
+                        {flavor}
+                      </button>
+                    )
+                  })}
                 </div>
               </div>
             )}
 
             {/* Weight Selection */}
-            {product.weights && product.weights.length > 0 && (
+            {availableWeights.length > 0 && (
               <div>
-                <h3 className="font-semibold text-foreground mb-3">Choose Weight</h3>
+                <h3 className="font-semibold text-foreground mb-3">
+                  Choose Weight
+                  <span className="text-sm font-normal text-muted-foreground ml-2">
+                    ({availableWeights.length} options)
+                  </span>
+                </h3>
                 <div className="flex flex-wrap gap-2">
-                  {product.weights.map((weight) => (
-                    <button
-                      key={weight}
-                      onClick={() => setSelectedWeight(weight)}
-                      className={`px-4 py-2 rounded-lg border text-sm transition-all ${
-                        selectedWeight === weight
-                          ? "border-primary bg-primary/10 text-primary"
-                          : "border-border text-muted-foreground hover:border-primary/50"
-                      }`}
-                    >
-                      {weight}
-                    </button>
-                  ))}
+                  {availableWeights.map((weight) => {
+                    const currentWeight = product.weight || ""
+                    const isSelected = currentWeight === weight
+                    // Find the variant with this weight to show price difference
+                    const variantWithWeight = productVariants.find((v) => v.weight === weight)
+                    const priceDiff = variantWithWeight ? variantWithWeight.price - product.price : 0
+                    
+                    return (
+                      <button
+                        key={weight}
+                        onClick={() => handleWeightChange(weight)}
+                        className={`px-4 py-2 rounded-lg border text-sm transition-all ${
+                          isSelected
+                            ? "border-primary bg-primary/10 text-primary font-medium"
+                            : "border-border text-muted-foreground hover:border-primary/50 hover:bg-primary/5"
+                        }`}
+                      >
+                        <span>{weight}</span>
+                        {priceDiff !== 0 && !isSelected && (
+                          <span className={`ml-1 text-xs ${priceDiff > 0 ? "text-orange-500" : "text-green-500"}`}>
+                            {priceDiff > 0 ? `+₹${priceDiff}` : `-₹${Math.abs(priceDiff)}`}
+                          </span>
+                        )}
+                      </button>
+                    )
+                  })}
                 </div>
               </div>
             )}

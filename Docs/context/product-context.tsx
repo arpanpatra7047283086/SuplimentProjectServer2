@@ -4,6 +4,15 @@ import { createContext, useContext, useState, type ReactNode } from "react"
 import type { Product } from "@/app/types/product"
 import { products as defaultProducts } from "@/lib/products"
 
+interface ProductVariant {
+  id: string
+  flavor: string
+  weight: string
+  price: number
+  originalPrice: number
+  image: string
+}
+
 interface ProductContextType {
   products: Product[]
   addProduct: (product: Product) => void
@@ -12,6 +21,8 @@ interface ProductContextType {
   getProductsByCategory: (category: string) => Product[]
   getProductById: (id: string) => Product | undefined
   searchProducts: (query: string) => Product[]
+  getProductVariants: (productName: string, brand: string) => ProductVariant[]
+  findProductByVariant: (productName: string, brand: string, flavor: string, weight: string) => Product | undefined
 }
 
 const ProductContext = createContext<ProductContextType | undefined>(undefined)
@@ -67,6 +78,37 @@ export function ProductProvider({ children }: { children: ReactNode }) {
     )
   }
 
+  // Get all variants of a product by name and brand
+  const getProductVariants = (productName: string, brand: string): ProductVariant[] => {
+    const variants = products
+      .filter((p) => p.name === productName && p.brand === brand)
+      .map((p) => ({
+        id: p.id,
+        flavor: p.flavors.length > 0 ? p.flavors[0].name : "",
+        weight: p.weight || "",
+        price: p.price,
+        originalPrice: p.originalPrice,
+        image: p.image,
+      }))
+    return variants
+  }
+
+  // Find a specific product by variant (name, brand, flavor, weight)
+  const findProductByVariant = (
+    productName: string,
+    brand: string,
+    flavor: string,
+    weight: string
+  ): Product | undefined => {
+    return products.find(
+      (p) =>
+        p.name === productName &&
+        p.brand === brand &&
+        p.weight === weight &&
+        p.flavors.some((f) => f.name === flavor)
+    )
+  }
+
   return (
     <ProductContext.Provider
       value={{
@@ -77,6 +119,8 @@ export function ProductProvider({ children }: { children: ReactNode }) {
         getProductsByCategory,
         getProductById,
         searchProducts,
+        getProductVariants,
+        findProductByVariant,
       }}
     >
       {children}
