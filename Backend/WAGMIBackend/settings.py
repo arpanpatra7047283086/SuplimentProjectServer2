@@ -159,6 +159,7 @@ CORS_ALLOWED_ORIGINS = [
     "http://localhost:3000",
     "http://192.168.1.4:3000",
     "https://supliment-project.vercel.app",
+    "https://supliment-project.vercel.app",
     
 ]
 CORS_ALLOW_HEADERS = ['*']
@@ -180,7 +181,7 @@ CORS_ALLOW_HEADERS = [
     "x-requested-with",
 ]
 
-
+CORS_ALLOW_CREDENTIALS = True
 CSRF_TRUSTED_ORIGINS = [
     "http://localhost:5173",  
     "http://10.2.0.2:5173",
@@ -188,6 +189,7 @@ CSRF_TRUSTED_ORIGINS = [
     "https://smart-indiahackathon2025.vercel.app",
     "http://localhost:3000",
     "http://192.168.1.4:3000",
+    "https://supliment-project.vercel.app",
     "https://supliment-project.vercel.app",
 ]
 
@@ -202,12 +204,25 @@ CORS_ALLOW_METHODS = [
 
 from datetime import timedelta
 
+
+# =========================
+# SECURITY & COOKIE SETTINGS
+# =========================
+
+CSRF_COOKIE_SECURE = True
+CSRF_COOKIE_SAMESITE = "None"
+
+SESSION_COOKIE_SECURE = True
+SESSION_COOKIE_SAMESITE = "None"
+
+
 SIMPLE_JWT = {
     "ACCESS_TOKEN_LIFETIME": timedelta(minutes=5),   # short-lived
     "REFRESH_TOKEN_LIFETIME": timedelta(days=7),     # long-lived
     "ROTATE_REFRESH_TOKENS": True,                  # issue new refresh token on each use
     "BLACKLIST_AFTER_ROTATION": True,               # invalidate old refresh tokens
 }
+
 
 
 REST_FRAMEWORK = {
