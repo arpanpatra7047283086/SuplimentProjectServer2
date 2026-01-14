@@ -16,7 +16,7 @@ load_dotenv()
 
 SECRET_KEY = os.getenv("DJANGO_SECRET_KEY", "unsafe-dev-key")
 
-DEBUG = False   # ✅ MUST be False on Render
+DEBUG = True   # ✅ MUST be False on Render
 
 ALLOWED_HOSTS = [
     "suplimentproject.onrender.com",
@@ -161,9 +161,10 @@ CORS_ALLOW_METHODS = [
 # ======================
 
 CSRF_TRUSTED_ORIGINS = [
-    "http://localhost:3000",
     "https://supliment-project.vercel.app",
+    "http://localhost:3000",
 ]
+
 
 CSRF_COOKIE_SECURE = True
 CSRF_COOKIE_SAMESITE = "None"
