@@ -6,6 +6,10 @@ class CookieJWTAuthentication(JWTAuthentication):
     Custom JWT auth to read access token from cookie
     """
     def authenticate(self, request):
+        #print("Navigation comming for auth..")
+
+        access_token = request.COOKIES.get("access")
+        #print("Acess token for cokies:", access_token)
         raw_token = request.COOKIES.get('access')  
         if not raw_token:
             return None 

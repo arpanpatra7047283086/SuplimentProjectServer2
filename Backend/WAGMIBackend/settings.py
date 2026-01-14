@@ -158,8 +158,17 @@ CORS_ALLOWED_ORIGINS = [
     "https://smart-indiahackathon2025.vercel.app",
     "http://localhost:3000",
     "http://192.168.1.4:3000",
+    "https://supliment-project.vercel.app",
+    
 ]
 CORS_ALLOW_HEADERS = ['*']
+
+CSRF_TRUSTED_ORIGINS = [
+    "http://localhost:3000",
+    "http://localhost:5173",
+    "http://192.168.1.4:3000",
+    "https://supliment-project.vercel.app",
+]
 
 CORS_ALLOW_HEADERS = [
     "authorization",
@@ -179,6 +188,7 @@ CSRF_TRUSTED_ORIGINS = [
     "https://smart-indiahackathon2025.vercel.app",
     "http://localhost:3000",
     "http://192.168.1.4:3000",
+    "https://supliment-project.vercel.app",
 ]
 
 CORS_ALLOW_METHODS = [
@@ -203,12 +213,17 @@ SIMPLE_JWT = {
 REST_FRAMEWORK = {
     "DEFAULT_AUTHENTICATION_CLASSES": (
         "WAGMIBackend.authentication.CookieJWTAuthentication",
-        "rest_framework_simplejwt.authentication.JWTAuthentication",
     ),
     "DEFAULT_PERMISSION_CLASSES": (
         "rest_framework.permissions.IsAuthenticated",
     ),
 }
+from datetime import timedelta
+SIMPLE_JWT = {
+    "ACCESS_TOKEN_LIFETIME": timedelta(minutes=15),  # default 5
+    "REFRESH_TOKEN_LIFETIME": timedelta(days=7),
+}
+
 
 
 

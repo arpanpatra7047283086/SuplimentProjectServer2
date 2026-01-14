@@ -1,16 +1,21 @@
 "use client"
 
-import { createContext, useContext, useEffect, useState, type ReactNode } from "react"
+import {
+  createContext,
+  useContext,
+  useEffect,
+  useState,
+  type ReactNode,
+} from "react"
 
-const API_BASE = "http://127.0.0.1:8000"
+const API_BASE = process.env.NEXT_PUBLIC_API_URL;
 
-/* ================= TYPES ================= */
+
 
 interface User {
   id: number
   username: string
   email: string
-  phone: string
   isAdmin: boolean
 }
 
@@ -30,38 +35,47 @@ interface AuthContextType {
   logout: () => Promise<void>
 }
 
-/* ================= CONTEXT ================= */
+
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined)
 
-/* ================= PROVIDER ================= */
+
 
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(null)
+  const [refreshing, setRefreshing] = useState(false)
 
-  /* -------- FETCH CURRENT USER WITH AUTO REFRESH -------- */
+ 
   const fetchCurrentUser = async () => {
     try {
-      let res = await fetch(`${API_BASE}/api/me/`, { method: "GET", credentials: "include" })
+      let res = await fetch(`${API_BASE}/api/me/`, {
+        method: "GET",
+        credentials: "include", 
+      })
 
-      // If access token expired → try refresh
-      if (res.status === 401) {
-        console.log("Access token expired, refreshing...")
+      if (res.status === 401 && !refreshing) {
+        setRefreshing(true)
+        console.log("Access expired → refreshing token")
+
         const refreshRes = await fetch(`${API_BASE}/api/token/refresh/`, {
           method: "POST",
+          credentials: "include", 
+        })
+
+        if (!refreshRes.ok) {
+          console.error("Refresh failed → logging out")
+          setUser(null)
+          setRefreshing(false)
+          return
+        }
+
+       
+        res = await fetch(`${API_BASE}/api/me/`, {
+          method: "GET",
           credentials: "include",
         })
 
-        const refreshData = await refreshRes.json()
-        console.log("Refresh API returned:", refreshData)
-
-        if (refreshRes.ok) {
-          // Retry fetching current user after refresh
-          res = await fetch(`${API_BASE}/api/me/`, { credentials: "include" })
-        } else {
-          console.log("Refresh token invalid or expired")
-          throw new Error("Unauthorized")
-        }
+        setRefreshing(false)
       }
 
       if (res.ok) {
@@ -70,15 +84,15 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           id: data.id,
           username: data.username,
           email: data.email,
-          phone: data.username,
-          isAdmin: data.isAdmin || false,
+          isAdmin: data.isAdmin,
         })
       } else {
         setUser(null)
       }
     } catch (err) {
-      console.error("Failed to fetch current user:", err)
+      console.error("Auth error:", err)
       setUser(null)
+      setRefreshing(false)
     }
   }
 
@@ -86,7 +100,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     fetchCurrentUser()
   }, [])
 
-  /* -------- LOGIN -------- */
+  
   const login = async (phone: string, password: string) => {
     try {
       const res = await fetch(`${API_BASE}/api/login/`, {
@@ -95,6 +109,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         credentials: "include",
         body: JSON.stringify({ username: phone, password }),
       })
+
       const data = await res.json()
       if (!res.ok) return { success: false, message: data.error || "Login failed" }
 
@@ -102,16 +117,16 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         id: data.user.id,
         username: data.user.username,
         email: data.user.email,
-        phone: data.user.username,
         isAdmin: false,
       })
+
       return { success: true, message: "Login successful" }
     } catch {
       return { success: false, message: "Server error" }
     }
   }
 
-  /* -------- SIGNUP -------- */
+  
   const signup = async (
     name: string,
     email: string,
@@ -137,16 +152,16 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         id: data.user.id,
         username: data.user.username,
         email: data.user.email,
-        phone: data.user.username,
         isAdmin: false,
       })
+
       return { success: true, message: data.message }
     } catch {
       return { success: false, message: "Server error" }
     }
   }
 
-  /* -------- ADMIN LOGIN -------- */
+  
   const adminLogin = async (phone: string, password: string) => {
     try {
       const res = await fetch(`${API_BASE}/api/admin-login/`, {
@@ -163,16 +178,16 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         id: data.user.id,
         username: data.user.username,
         email: data.user.email,
-        phone: data.user.username,
         isAdmin: true,
       })
+
       return { success: true, message: "Admin login successful" }
     } catch {
       return { success: false, message: "Server error" }
     }
   }
 
-  /* -------- LOGOUT -------- */
+  
   const logout = async () => {
     await fetch(`${API_BASE}/api/logout/`, {
       method: "POST",
@@ -181,7 +196,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     setUser(null)
   }
 
-  /* ================= PROVIDER ================= */
   return (
     <AuthContext.Provider
       value={{
@@ -199,7 +213,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   )
 }
 
-/* ================= HOOK ================= */
+
 export function useAuth() {
   const context = useContext(AuthContext)
   if (!context) throw new Error("useAuth must be used within AuthProvider")

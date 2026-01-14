@@ -17,7 +17,7 @@ export const metadata: Metadata = {
   description:
     "Your one-stop destination for 100% authentic health supplements. Shop Whey Protein, Creatine, Mass Gainers, Pre-Workout & more from top brands.",
   keywords: ["supplements", "whey protein", "creatine", "mass gainer", "fitness", "health", "gym"],
-  generator: "v0.app",
+  generator: "SS Supplement",
   icons: {
     icon: [
       {
