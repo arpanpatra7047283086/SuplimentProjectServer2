@@ -16,10 +16,11 @@ load_dotenv()
 
 SECRET_KEY = os.getenv("DJANGO_SECRET_KEY", "unsafe-dev-key")
 
-DEBUG = True   # ✅ MUST be False on Render
+DEBUG = False   # ✅ MUST be False on Render
 
 ALLOWED_HOSTS = [
     "suplimentproject.onrender.com",
+    " https://supliment-project.vercel.app",
     "localhost",
     "127.0.0.1",
 ]
