@@ -169,6 +169,7 @@ CSRF_TRUSTED_ORIGINS = [
     "http://localhost:5173",
     "http://192.168.1.4:3000",
     "https://supliment-project.vercel.app",
+    "https://suplimentproject.onrender.com",
 ]
 
 CORS_ALLOW_HEADERS = [
@@ -191,6 +192,7 @@ CSRF_TRUSTED_ORIGINS = [
     "http://192.168.1.4:3000",
     "https://supliment-project.vercel.app",
     "https://supliment-project.vercel.app",
+    "https://suplimentproject.onrender.com",
 ]
 
 CORS_ALLOW_METHODS = [
