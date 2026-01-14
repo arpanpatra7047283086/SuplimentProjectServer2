@@ -45,7 +45,6 @@ COOKIE_SETTINGS = {
 }
 
 # ...................................................... SIGNUP ...........................................................
-@csrf_exempt
 @api_view(["POST"])
 @permission_classes([AllowAny])
 def signup(request):
@@ -115,7 +114,6 @@ def login_user(request):
     return response
 
 # ................................................. ADMIN LOGIN ..........................................................................
-@csrf_exempt
 @api_view(["POST"])
 @permission_classes([AllowAny])
 def admin_login(request):
@@ -135,7 +133,6 @@ def admin_login(request):
     return response
 
 # ..................................................... CURRENT USER ...................................................................
-@csrf_exempt
 @api_view(["GET"])
 @authentication_classes([CookieJWTAuthentication])
 @permission_classes([IsAuthenticated])
@@ -155,7 +152,6 @@ def current_user(request):
 
 
 # .................................................. LOGOUT .....................................................................
-@csrf_exempt
 @api_view(["POST"])
 @permission_classes([AllowAny])
 def logout(request):
@@ -165,7 +161,6 @@ def logout(request):
     return response
 
 # ....................................................... TOKEN REFRESH ....................................................
-@csrf_exempt
 @api_view(["POST"])
 def token_refresh(request):
     print("Refreash cookies:", request.COOKIES)
