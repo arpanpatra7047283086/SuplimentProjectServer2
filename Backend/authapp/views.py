@@ -183,7 +183,7 @@ def token_refresh(request):
 
         access = str(token.access_token)
         response = Response({"access": access})
-        response.set_cookie("access", access, **COOKIE_SETTINGS)
+        response.set_cookie("access", access, httponly=True, samesite="Lax")
         return response
 
     except Exception as e:
