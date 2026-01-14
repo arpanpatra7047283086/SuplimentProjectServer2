@@ -34,6 +34,7 @@ export default function LoginPage() {
   const [showPassword, setShowPassword] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
 
+  // ================= STATES =================
   const [loginData, setLoginData] = useState({ phone: "", password: "" })
   const [adminData, setAdminData] = useState({ phone: "", password: "" })
 
@@ -46,10 +47,9 @@ export default function LoginPage() {
     referralCode: refCode,
   })
 
+  // Auto switch to signup if referral present
   useEffect(() => {
-    if (refCode) {
-      setActiveTab("signup")
-    }
+    if (refCode) setActiveTab("signup")
   }, [refCode])
 
   // ================= LOGIN =================
@@ -61,7 +61,7 @@ export default function LoginPage() {
 
     if (result.success) {
       toast({ title: "Success", description: result.message })
-      router.replace(redirect) // ✅ redirect to home
+      router.replace(redirect)
     } else {
       toast({
         title: "Error",
@@ -98,8 +98,6 @@ export default function LoginPage() {
 
     if (result.success) {
       toast({ title: "Success", description: result.message })
-
-      // ✅ Switch to login tab after signup
       setActiveTab("login")
       setLoginData({ phone: signupData.phone, password: "" })
     } else {
@@ -141,18 +139,18 @@ export default function LoginPage() {
       <main className="container mx-auto px-4 py-12">
         <div className="max-w-md mx-auto">
           <Tabs value={activeTab} onValueChange={setActiveTab}>
-            <TabsList className="grid grid-cols-3 w-full">
+            <TabsList className="grid w-full grid-cols-3">
               <TabsTrigger value="login">Login</TabsTrigger>
               <TabsTrigger value="signup">Sign Up</TabsTrigger>
               <TabsTrigger value="admin">Admin</TabsTrigger>
             </TabsList>
 
-            {/* LOGIN */}
+            {/* ================= LOGIN ================= */}
             <TabsContent value="login">
               <Card>
                 <CardHeader>
-                  <CardTitle className="flex items-center gap-2">
-                    <User className="h-5 w-5" /> Login
+                  <CardTitle className="flex gap-2">
+                    <User /> Login
                   </CardTitle>
                   <CardDescription>Login to your account</CardDescription>
                 </CardHeader>
@@ -176,14 +174,17 @@ export default function LoginPage() {
                           type={showPassword ? "text" : "password"}
                           value={loginData.password}
                           onChange={(e) =>
-                            setLoginData({ ...loginData, password: e.target.value })
+                            setLoginData({
+                              ...loginData,
+                              password: e.target.value,
+                            })
                           }
                           required
                         />
                         <button
                           type="button"
-                          onClick={() => setShowPassword(!showPassword)}
                           className="absolute right-3 top-1/2 -translate-y-1/2"
+                          onClick={() => setShowPassword(!showPassword)}
                         >
                           {showPassword ? <EyeOff /> : <Eye />}
                         </button>
@@ -198,12 +199,12 @@ export default function LoginPage() {
               </Card>
             </TabsContent>
 
-            {/* SIGNUP */}
+            {/* ================= SIGNUP ================= */}
             <TabsContent value="signup">
               <Card>
                 <CardHeader>
-                  <CardTitle className="flex items-center gap-2">
-                    <Gift className="h-5 w-5" /> Sign Up
+                  <CardTitle className="flex gap-2">
+                    <Gift /> Sign Up
                   </CardTitle>
                 </CardHeader>
                 <CardContent>
@@ -211,7 +212,10 @@ export default function LoginPage() {
                     <Input placeholder="Name" value={signupData.name} onChange={(e) => setSignupData({ ...signupData, name: e.target.value })} required />
                     <Input placeholder="Email" value={signupData.email} onChange={(e) => setSignupData({ ...signupData, email: e.target.value })} required />
                     <Input placeholder="Phone" value={signupData.phone} onChange={(e) => setSignupData({ ...signupData, phone: e.target.value })} required />
+                    <Input type="password" placeholder="Password" value={signupData.password} onChange={(e) => setSignupData({ ...signupData, password: e.target.value })} required />
+                    <Input type="password" placeholder="Confirm Password" value={signupData.confirmPassword} onChange={(e) => setSignupData({ ...signupData, confirmPassword: e.target.value })} required />
                     <Input placeholder="Referral Code (optional)" value={signupData.referralCode} onChange={(e) => setSignupData({ ...signupData, referralCode: e.target.value })} />
+
                     <Button className="w-full" disabled={isLoading}>
                       {isLoading ? "Creating..." : "Create Account"}
                     </Button>
@@ -220,19 +224,21 @@ export default function LoginPage() {
               </Card>
             </TabsContent>
 
-            {/* ADMIN */}
+            {/* ================= ADMIN ================= */}
             <TabsContent value="admin">
               <Card>
                 <CardHeader>
-                  <CardTitle className="flex items-center gap-2">
-                    <Shield className="h-5 w-5" /> Admin Login
+                  <CardTitle className="flex gap-2">
+                    <Shield /> Admin Login
                   </CardTitle>
                 </CardHeader>
                 <CardContent>
                   <form onSubmit={handleAdminLogin} className="space-y-4">
-                    <Input placeholder="Phone" value={adminData.phone} onChange={(e) => setAdminData({ ...adminData, phone: e.target.value })} />
-                    <Input type="password" placeholder="Password" value={adminData.password} onChange={(e) => setAdminData({ ...adminData, password: e.target.value })} />
-                    <Button className="w-full">Admin Login</Button>
+                    <Input placeholder="Phone" value={adminData.phone} onChange={(e) => setAdminData({ ...adminData, phone: e.target.value })} required />
+                    <Input type="password" placeholder="Password" value={adminData.password} onChange={(e) => setAdminData({ ...adminData, password: e.target.value })} required />
+                    <Button className="w-full" disabled={isLoading}>
+                      Admin Login
+                    </Button>
                   </form>
                 </CardContent>
               </Card>
