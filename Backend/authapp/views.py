@@ -42,7 +42,7 @@ COOKIE_SETTINGS = {
     "secure": True,       
     "samesite": "None",     
     "path": "/",
-    "domain": ".onrender.com",  #Add new for phone solve
+    #"domain": ".onrender.com",  #Add new for phone solve
 }
 
 # ...................................................... SIGNUP ...........................................................
