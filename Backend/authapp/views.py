@@ -42,6 +42,7 @@ COOKIE_SETTINGS = {
     "secure": True,       
     "samesite": "None",     
     "path": "/",
+    "domain": ".onrender.com",  #Add new for phone solve
 }
 
 # ...................................................... SIGNUP ...........................................................
@@ -178,7 +179,7 @@ def token_refresh(request):
 
         access = str(token.access_token)
         response = Response({"access": access})
-        response.set_cookie("access", access, httponly=True, samesite="Lax")
+        response.set_cookie("access", access, **COOKIE_SETTINGS)
         return response
 
     except Exception as e:
