@@ -1,5 +1,6 @@
 "use client"
 
+
 import Link from "next/link"
 import {
   Dumbbell,
@@ -14,6 +15,9 @@ import {
   Leaf,
   Candy,
   ShoppingBag,
+  Sparkles,
+  HeartPulse,
+  ShieldPlus,
 } from "lucide-react"
 
 const categories = [
@@ -29,6 +33,12 @@ const categories = [
   { name: "Ayurvedic Products", icon: Leaf },
   { name: "Protein Bars & Snacks", icon: Candy },
   { name: "Accessories", icon: ShoppingBag },
+ { name: "Beauty", icon: Sparkles },
+ { name: "Fish Oil", icon: HeartPulse },
+  { name: "Minerals & Health", icon: ShieldPlus },
+
+
+
 ]
 
 export function CategoryBar() {

@@ -22,6 +22,10 @@ const categories = [
   "Ayurvedic Products",
   "Protein Bars & Snacks",
   "Accessories",
+  "Minerals & Health",
+  "Beauty",
+  "Fish Oil",
+  
 ]
 
 const stores = ["Delhi NCR", "Mumbai", "Bangalore", "Pune", "Chennai"]
