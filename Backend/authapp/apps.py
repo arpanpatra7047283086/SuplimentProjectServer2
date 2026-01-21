@@ -1,6 +1,9 @@
 from django.apps import AppConfig
 
 
-class BackendRouterConfig(AppConfig):
-    default_auto_field = 'django.db.models.BigAutoField'
-    name = 'authapp'
+class AuthappConfig(AppConfig):
+    default_auto_field = "django.db.models.BigAutoField"
+    name = "authapp"
+
+    def ready(self):
+        import authapp.signals

@@ -8,9 +8,7 @@ import {
   type ReactNode,
 } from "react"
 
-const API_BASE = process.env.NEXT_PUBLIC_API_URL;
-
-
+const API_BASE = process.env.NEXT_PUBLIC_API_URL
 
 interface User {
   id: number
@@ -23,6 +21,7 @@ interface AuthContextType {
   user: User | null
   isAuthenticated: boolean
   isAdmin: boolean
+  loading: boolean
   login: (phone: string, password: string) => Promise<{ success: boolean; message: string }>
   signup: (
     name: string,
@@ -35,64 +34,33 @@ interface AuthContextType {
   logout: () => Promise<void>
 }
 
-
-
 const AuthContext = createContext<AuthContextType | undefined>(undefined)
-
-
 
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(null)
-  const [refreshing, setRefreshing] = useState(false)
+  const [loading, setLoading] = useState(true)
 
- 
+  // ================= FETCH CURRENT USER =================
   const fetchCurrentUser = async () => {
     try {
-      let res = await fetch(`${API_BASE}/api/me/`, {
-        method: "GET",
-        credentials: "include", 
+      const res = await fetch(`${API_BASE}/api/me/`, {
+        credentials: "include",
       })
-
-      if (res.status === 401 && !refreshing) {
-        setRefreshing(true)
-        console.log("Access expired → refreshing token")
-
-        const refreshRes = await fetch(`${API_BASE}/api/token/refresh/`, {
-          method: "POST",
-          credentials: "include", 
-        })
-
-        if (!refreshRes.ok) {
-          console.error("Refresh failed → logging out")
-          setUser(null)
-          setRefreshing(false)
-          return
-        }
-
-       
-        res = await fetch(`${API_BASE}/api/me/`, {
-          method: "GET",
-          credentials: "include",
-        })
-
-        setRefreshing(false)
-      }
-
       if (res.ok) {
         const data = await res.json()
         setUser({
           id: data.id,
-          username: data.username,
-          email: data.email,
-          isAdmin: data.isAdmin,
+          username: data.username || data.phone,
+          email: data.email || "",
+          isAdmin: data.isAdmin || false,
         })
       } else {
         setUser(null)
       }
-    } catch (err) {
-      console.error("Auth error:", err)
+    } catch {
       setUser(null)
-      setRefreshing(false)
+    } finally {
+      setLoading(false)
     }
   }
 
@@ -100,7 +68,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     fetchCurrentUser()
   }, [])
 
-  
+  // ================= LOGIN =================
   const login = async (phone: string, password: string) => {
     try {
       const res = await fetch(`${API_BASE}/api/login/`, {
@@ -109,24 +77,24 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         credentials: "include",
         body: JSON.stringify({ username: phone, password }),
       })
-
       const data = await res.json()
+
       if (!res.ok) return { success: false, message: data.error || "Login failed" }
 
       setUser({
-        id: data.user.id,
-        username: data.user.username,
-        email: data.user.email,
+        id: data.user?.id || 0,
+        username: data.user?.phone || data.user?.username || phone,
+        email: data.user?.email || "",
         isAdmin: false,
       })
 
-      return { success: true, message: "Login successful" }
+      return { success: true, message: data.message || "Login successful" }
     } catch {
       return { success: false, message: "Server error" }
     }
   }
 
-  
+  // ================= SIGNUP =================
   const signup = async (
     name: string,
     email: string,
@@ -135,7 +103,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     referralCode?: string
   ) => {
     try {
-      const body: any = { username: phone, email, password, name }
+      const body: any = { name, email, phone, password }
       if (referralCode) body.referralCode = referralCode
 
       const res = await fetch(`${API_BASE}/api/signup/`, {
@@ -144,24 +112,16 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         credentials: "include",
         body: JSON.stringify(body),
       })
-
       const data = await res.json()
+
       if (!res.ok) return { success: false, message: data.error || "Signup failed" }
-
-      setUser({
-        id: data.user.id,
-        username: data.user.username,
-        email: data.user.email,
-        isAdmin: false,
-      })
-
-      return { success: true, message: data.message }
+      return { success: true, message: data.message || "Signup successful" }
     } catch {
       return { success: false, message: "Server error" }
     }
   }
 
-  
+  // ================= ADMIN LOGIN =================
   const adminLogin = async (phone: string, password: string) => {
     try {
       const res = await fetch(`${API_BASE}/api/admin-login/`, {
@@ -170,24 +130,24 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         credentials: "include",
         body: JSON.stringify({ username: phone, password }),
       })
-
       const data = await res.json()
+
       if (!res.ok) return { success: false, message: data.error || "Admin login failed" }
 
       setUser({
-        id: data.user.id,
-        username: data.user.username,
-        email: data.user.email,
+        id: data.user?.id || 0,
+        username: data.user?.username || phone,
+        email: data.user?.email || "",
         isAdmin: true,
       })
 
-      return { success: true, message: "Admin login successful" }
+      return { success: true, message: data.message || "Admin login successful" }
     } catch {
       return { success: false, message: "Server error" }
     }
   }
 
-  
+  // ================= LOGOUT =================
   const logout = async () => {
     await fetch(`${API_BASE}/api/logout/`, {
       method: "POST",
@@ -202,18 +162,19 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         user,
         isAuthenticated: !!user,
         isAdmin: user?.isAdmin || false,
+        loading,
         login,
         signup,
         adminLogin,
         logout,
       }}
     >
-      {children}
+      {!loading && children}
     </AuthContext.Provider>
   )
 }
 
-
+// ================= USE AUTH HOOK =================
 export function useAuth() {
   const context = useContext(AuthContext)
   if (!context) throw new Error("useAuth must be used within AuthProvider")

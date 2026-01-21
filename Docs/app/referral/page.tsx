@@ -1,190 +1,166 @@
 "use client"
 
-import { useState } from "react"
-import { useRouter } from "next/navigation"
-import { Gift, Copy, CheckCircle, Users, Coins, Share2 } from "lucide-react"
+import { useEffect, useState } from "react"
+import { Gift, Copy, CheckCircle, Coins, Share2 } from "lucide-react"
 import { Header } from "@/components/header"
 import { Footer } from "@/components/footer"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { useAuth } from "@/context/auth-context"
 import { useToast } from "@/hooks/use-toast"
+import { useRouter } from "next/navigation"
+import { useAuth } from "@/context/auth-context"
+
+interface ReferralResponse {
+  code: string
+  whatsapp_url: string
+}
 
 export default function ReferralPage() {
   const router = useRouter()
-  const { user, isAuthenticated, getAllUsers } = useAuth()
   const { toast } = useToast()
+  const { user, isAuthenticated, loading: authLoading } = useAuth() // ✅ include loading
+
+  const [coins, setCoins] = useState<number>(0)
+  const [referral, setReferral] = useState<ReferralResponse | null>(null)
+  const [loading, setLoading] = useState(true)
   const [copied, setCopied] = useState(false)
+  const [generating, setGenerating] = useState(false)
 
-  if (!isAuthenticated) {
-    router.push("/login?redirect=/referral")
-    return null
-  }
+  // ================= AUTH CHECK + FETCH WALLET =================
+  useEffect(() => {
+    if (authLoading) return // wait until auth finishes
 
-  const referralLink = `${typeof window !== "undefined" ? window.location.origin : ""}/login?ref=${user?.referralCode}`
+    if (!isAuthenticated) {
+      router.replace("/login?redirect=/referral")
+      return
+    }
 
-  const copyReferralCode = () => {
-    navigator.clipboard.writeText(user?.referralCode || "")
-    setCopied(true)
-    toast({ title: "Copied!", description: "Referral code copied to clipboard" })
-    setTimeout(() => setCopied(false), 2000)
-  }
+    const fetchWallet = async () => {
+      try {
+        const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/my-wallet/`, {
+          credentials: "include",
+        })
 
-  const shareReferral = () => {
-    if (navigator.share) {
-      navigator.share({
-        title: "Join SS Supplement",
-        text: `Use my referral code ${user?.referralCode} to get 50 coins on signup! Shop premium supplements at SS Supplement.`,
-        url: referralLink,
+        if (!res.ok) {
+          router.replace("/login?redirect=/referral")
+          return
+        }
+
+        const data = await res.json()
+        setCoins(data.coins)
+      } catch (err) {
+        toast({ title: "Error", description: "Failed to fetch wallet" })
+        console.error(err)
+      } finally {
+        setLoading(false)
+      }
+    }
+
+    fetchWallet()
+  }, [authLoading, isAuthenticated, router, toast])
+
+  // ================= GENERATE REFERRAL =================
+  const generateReferral = async () => {
+    setGenerating(true)
+
+    try {
+      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/generate-referral/`, {
+        method: "POST",
+        credentials: "include",
       })
-    } else {
-      navigator.clipboard.writeText(referralLink)
-      toast({ title: "Link Copied!", description: "Share this link with your friends" })
+
+      if (!res.ok) {
+        if (res.status === 401) {
+          router.replace("/login?redirect=/referral")
+        } else if (res.status === 403) {
+          toast({ title: "Not allowed", description: "You are not authorized to generate a referral" })
+        } else {
+          toast({ title: "Error", description: "Failed to generate referral code" })
+        }
+        return
+      }
+
+      const data: ReferralResponse = await res.json()
+      setReferral(data)
+      window.open(data.whatsapp_url, "_blank")
+    } catch (err) {
+      toast({ title: "Server Error", description: "Something went wrong" })
+      console.error(err)
+    } finally {
+      setGenerating(false)
     }
   }
 
-  // Get referral stats
-  const allUsers = getAllUsers()
-  const referredUsers = allUsers.filter((u) => u.referredBy === user?.id)
+  // ================= COPY CODE =================
+  const copyCode = () => {
+    if (!referral) return
+    navigator.clipboard.writeText(referral.code)
+    setCopied(true)
+    toast({ title: "Copied!", description: "Referral code copied" })
+    setTimeout(() => setCopied(false), 2000)
+  }
 
+  // ================= LOADING =================
+  if (authLoading || loading) {
+    return <p className="text-center mt-20">Loading...</p>
+  }
+
+  // ================= UI =================
   return (
     <div className="min-h-screen bg-background">
       <Header />
-      <main className="container mx-auto px-4 py-8">
-        <div className="max-w-3xl mx-auto">
+
+      <main className="container mx-auto px-4 py-10">
+        <div className="max-w-xl mx-auto">
+
           {/* Header */}
           <div className="text-center mb-8">
             <div className="w-20 h-20 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-4">
               <Gift className="h-10 w-10 text-primary" />
             </div>
-            <h1 className="text-3xl font-bold text-foreground mb-2">Refer & Earn</h1>
-            <p className="text-muted-foreground">
-              Share your referral code with friends and earn coins on every successful signup!
-            </p>
+            <h1 className="text-3xl font-bold">Refer & Earn</h1>
+            <p className="text-muted-foreground">Share once • Earn once • Simple</p>
           </div>
 
-          {/* Stats Cards */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
-            <Card className="bg-card border-border">
-              <CardContent className="p-6 text-center">
-                <Coins className="h-8 w-8 text-warning mx-auto mb-2" />
-                <p className="text-3xl font-bold text-foreground">{user?.referralCoins || 0}</p>
-                <p className="text-sm text-muted-foreground">Your Coins</p>
-              </CardContent>
-            </Card>
-            <Card className="bg-card border-border">
-              <CardContent className="p-6 text-center">
-                <Users className="h-8 w-8 text-primary mx-auto mb-2" />
-                <p className="text-3xl font-bold text-foreground">{referredUsers.length}</p>
-                <p className="text-sm text-muted-foreground">Friends Referred</p>
-              </CardContent>
-            </Card>
-            <Card className="bg-card border-border">
-              <CardContent className="p-6 text-center">
-                <Gift className="h-8 w-8 text-success mx-auto mb-2" />
-                <p className="text-3xl font-bold text-foreground">{referredUsers.length * 100}</p>
-                <p className="text-sm text-muted-foreground">Coins Earned</p>
-              </CardContent>
-            </Card>
-          </div>
-
-          {/* Referral Code Card */}
-          <Card className="bg-card border-border mb-8">
-            <CardHeader>
-              <CardTitle className="text-foreground">Your Referral Code</CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="bg-secondary rounded-xl p-6 text-center">
-                <p className="text-4xl font-bold text-primary tracking-widest mb-4">{user?.referralCode}</p>
-                <div className="flex justify-center gap-3">
-                  <Button onClick={copyReferralCode} variant="outline">
-                    {copied ? <CheckCircle className="h-4 w-4 mr-2 text-success" /> : <Copy className="h-4 w-4 mr-2" />}
-                    {copied ? "Copied!" : "Copy Code"}
-                  </Button>
-                  <Button onClick={shareReferral} className="bg-primary hover:bg-primary/90">
-                    <Share2 className="h-4 w-4 mr-2" />
-                    Share
-                  </Button>
-                </div>
-              </div>
+          {/* Wallet Coins */}
+          <Card className="mb-6">
+            <CardContent className="p-6 text-center">
+              <Coins className="h-8 w-8 mx-auto mb-2" />
+              <p className="text-3xl font-bold">{coins}</p>
+              <p className="text-sm text-muted-foreground">Your Coins</p>
             </CardContent>
           </Card>
 
-          {/* How it Works */}
-          <Card className="bg-card border-border mb-8">
+          {/* Referral Card */}
+          <Card>
             <CardHeader>
-              <CardTitle className="text-foreground">How it Works</CardTitle>
+              <CardTitle>Your Referral Code</CardTitle>
             </CardHeader>
-            <CardContent>
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                <div className="text-center">
-                  <div className="w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-3">
-                    <span className="text-xl font-bold text-primary">1</span>
-                  </div>
-                  <h3 className="font-semibold text-foreground mb-1">Share Your Code</h3>
-                  <p className="text-sm text-muted-foreground">
-                    Share your unique referral code with friends and family
-                  </p>
-                </div>
-                <div className="text-center">
-                  <div className="w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-3">
-                    <span className="text-xl font-bold text-primary">2</span>
-                  </div>
-                  <h3 className="font-semibold text-foreground mb-1">Friend Signs Up</h3>
-                  <p className="text-sm text-muted-foreground">
-                    Your friend creates an account using your referral code
-                  </p>
-                </div>
-                <div className="text-center">
-                  <div className="w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-3">
-                    <span className="text-xl font-bold text-primary">3</span>
-                  </div>
-                  <h3 className="font-semibold text-foreground mb-1">Both Earn Coins</h3>
-                  <p className="text-sm text-muted-foreground">
-                    You get 100 coins and your friend gets 50 coins instantly!
-                  </p>
-                </div>
-              </div>
+
+            <CardContent className="text-center space-y-4">
+              {!referral ? (
+                <Button onClick={generateReferral} disabled={generating} className="w-full">
+                  <Share2 className="mr-2 h-4 w-4" />
+                  {generating ? "Generating..." : "Generate & Share on WhatsApp"}
+                </Button>
+              ) : (
+                <>
+                  <p className="text-4xl font-bold tracking-widest text-primary">{referral.code}</p>
+
+                  <Button variant="outline" onClick={copyCode}>
+                    {copied ? <CheckCircle className="mr-2 h-4 w-4" /> : <Copy className="mr-2 h-4 w-4" />}
+                    {copied ? "Copied" : "Copy Code"}
+                  </Button>
+
+                  <p className="text-sm text-muted-foreground">⚠️ This referral code can be used only once</p>
+                </>
+              )}
             </CardContent>
           </Card>
 
-          {/* Referred Friends */}
-          {referredUsers.length > 0 && (
-            <Card className="bg-card border-border">
-              <CardHeader>
-                <CardTitle className="text-foreground">Your Referrals</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-3">
-                  {referredUsers.map((referredUser) => (
-                    <div
-                      key={referredUser.id}
-                      className="flex items-center justify-between p-3 bg-secondary rounded-lg"
-                    >
-                      <div className="flex items-center gap-3">
-                        <div className="w-10 h-10 bg-primary/10 rounded-full flex items-center justify-center">
-                          <span className="text-primary font-semibold">
-                            {referredUser.name.charAt(0).toUpperCase()}
-                          </span>
-                        </div>
-                        <div>
-                          <p className="font-medium text-foreground">{referredUser.name}</p>
-                          <p className="text-xs text-muted-foreground">
-                            Joined {new Date(referredUser.createdAt).toLocaleDateString()}
-                          </p>
-                        </div>
-                      </div>
-                      <div className="text-right">
-                        <p className="text-success font-semibold">+100 coins</p>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </CardContent>
-            </Card>
-          )}
         </div>
       </main>
+
       <Footer />
     </div>
   )
