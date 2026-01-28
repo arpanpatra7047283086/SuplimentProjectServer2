@@ -10,6 +10,7 @@ interface ProductGridProps {
   limit?: number
   shuffle?: boolean
   title?: string
+  selectedBrands?: string[]
 }
 
 export function ProductGrid({
@@ -17,6 +18,7 @@ export function ProductGrid({
   limit,
   shuffle = false,
   title,
+  selectedBrands = [],
 }: ProductGridProps) {
   const { products, getProductsByCategory } = useProducts()
   const [displayProducts, setDisplayProducts] = useState<Product[]>([])
@@ -28,12 +30,17 @@ export function ProductGrid({
       ? getProductsByCategory(category)
       : products || []
 
+    // Filter by selected brands
+    if (selectedBrands.length > 0) {
+      items = items.filter((product) => selectedBrands.includes(product.brand))
+    }
+
     if (limit) {
       items = items.slice(0, limit)
     }
 
     return items
-  }, [products, category, limit, getProductsByCategory])
+  }, [products, category, limit, getProductsByCategory, selectedBrands])
 
   // ✅ Client-only shuffle
   useEffect(() => {
