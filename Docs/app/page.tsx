@@ -8,16 +8,18 @@ import { CategoryBar } from "@/components/category-bar"
 import { ProductGrid } from "@/components/product-grid"
 import { OffersBanner } from "@/components/offers-banner"
 
-const API_BASE = process.env.NEXT_PUBLIC_API_URL;
-
-
 export default function HomePage() {
+  const apiBase = process.env.NEXT_PUBLIC_API_URL
 
   useEffect(() => {
-    fetch(`${API_BASE}/api/wake-up/`)
+    if (!apiBase) {
+      return
+    }
+
+    fetch(`${apiBase}/api/wake-up/`)
       .then(() => console.log("Backend wake-up call sent"))
-      .catch(() => console.log("Backend sleeping... waking up"));
-  }, []);
+      .catch(() => console.log("Backend sleeping... waking up"))
+  }, [apiBase])
 
   return (
     <div className="min-h-screen bg-background">
