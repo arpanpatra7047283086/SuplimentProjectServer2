@@ -112,7 +112,7 @@ export default function ReferralPage() {
   /* ================= SHARE LOGIC ================= */
 
   const referralLink =
-    `https://supliment-project.vercel.app/signup?ref=${profile.referral_code}`
+  `https://supliment-project.vercel.app/login?ref=${profile.referral_code}`
 
   const shareText = "Join using my referral link and earn rewards 🎉"
 
