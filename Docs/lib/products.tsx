@@ -54,28 +54,28 @@ const PRICING = {
   MB_PR_1KG: getPrice(3005, 3339),
   MB_PR_2KG: getPrice(5606, 6229),
 
-  MB_PR_2KG_S: getPrice(5005, 6229),
+  MB_PR_2KG_S: getPrice(5606, 6229),
 
-  AVVATAR_W_1KG: getPrice(2899, 3334),
-  AVVATAR_W_2KG: getPrice(5299, 6094),
+  AVVATAR_W_1KG: getPrice(2899, 4229),
+  AVVATAR_W_2KG: getPrice(5599, 7699),
 
-  AVVATAR_P_1KG: getPrice(2699, 3104),
-  AVVATAR_P_2KG: getPrice(4999, 5749),
+  AVVATAR_P_1KG: getPrice(2399, 3559),
+  AVVATAR_P_2KG: getPrice(4599, 6849),
 
-  AVVATAR_I_1KG: getPrice(3199, 3679),
-  AVVATAR_I_2KG: getPrice(5899, 6784),
+  AVVATAR_I_1KG: getPrice(4003, 5469),
+  AVVATAR_I_2KG: getPrice(7829, 10189),
 
-  FUELONE_1KG: getPrice(1725, 2229),
+  FUELONE_1KG: getPrice(1725, 2299),
   FUELONE_2KG: getPrice(3280, 4099),
 
   ATOM_1KG: getPrice(2072, 3047),
   ATOM_2KG: getPrice(4065, 5978),
 
-  MORPH_T_1KG: getPrice(1899, 2184),
-  MORPH_W_2KG: getPrice(3299, 3794),
-  
-  ABS_1KG: getPrice(2599, 2989),
-  ABS_2KG: getPrice(4799, 5519),
+  MORPH_T_1KG: getPrice(2504, 3558),
+  MORPH_W_2KG: getPrice(3299, 3794),//no product
+
+  ABS_1KG: getPrice(2499, 3199),
+  ABS_2KG: getPrice(4599, 6090),
 
   // Creatine
   MB_CREA_100G: getPrice(599, 689),
@@ -1042,7 +1042,7 @@ export const products: Product[] = [
   // MUSCLEBLAZE BIOZYME
   {
     id: "41",
-    name: "MB Biozyme Whey Performance",
+    name: "Muscleblaze Biozyme Performance Whey",
     brand: "MuscleBlaze",
     category: "Whey Protein",
     ...PRICING.MB_BIO_1KG,
@@ -1063,7 +1063,7 @@ export const products: Product[] = [
   },
   {
     id: "42",
-    name: "MB Biozyme Whey Performance",
+    name: "Muscleblaze Biozyme Performance Whey",
     brand: "MuscleBlaze",
     category: "Whey Protein",
     ...PRICING.MB_BIO_2KG,
@@ -1084,7 +1084,7 @@ export const products: Product[] = [
   },
   {
     id: "43",
-    name: "MB Biozyme Whey Performance",
+    name: "Muscleblaze Biozyme Performance Whey",
     brand: "MuscleBlaze",
     category: "Whey Protein",
     ...PRICING.MB_BIO_1KG,
@@ -1105,7 +1105,7 @@ export const products: Product[] = [
   },
   {
     id: "44",
-    name: "MB Biozyme Whey Performance",
+    name: "Muscleblaze Biozyme Performance Whey",
     brand: "MuscleBlaze",
     category: "Whey Protein",
     ...PRICING.MB_BIO_2KG,
@@ -1126,7 +1126,7 @@ export const products: Product[] = [
   },
   {
     id: "45",
-    name: "MB Biozyme Whey Performance",
+    name: "Muscleblaze Biozyme Performance Whey",
     brand: "MuscleBlaze",
     category: "Whey Protein",
     ...PRICING.MB_BIO_1KG,
@@ -1147,7 +1147,7 @@ export const products: Product[] = [
   },
   {
     id: "46",
-    name: "MB Biozyme Whey Performance",
+    name: "Muscleblaze Biozyme Performance Whey",
     brand: "MuscleBlaze",
     category: "Whey Protein",
     ...PRICING.MB_BIO_2KG,
@@ -1168,7 +1168,7 @@ export const products: Product[] = [
   },
   {
     id: "47",
-    name: "MB Biozyme Whey Performance",
+    name: "Muscleblaze Biozyme Performance Whey",
     brand: "MuscleBlaze",
     category: "Whey Protein",
     ...PRICING.MB_BIO_1KG,
@@ -1189,7 +1189,7 @@ export const products: Product[] = [
   },
   {
     id: "48",
-    name: "MB Biozyme Whey Performance",
+    name: "Muscleblaze Biozyme Performance Whey",
     brand: "MuscleBlaze",
     category: "Whey Protein",
     ...PRICING.MB_BIO_2KG,
@@ -1210,7 +1210,7 @@ export const products: Product[] = [
   },
   {
     id: "49",
-    name: "MB Biozyme Whey Performance",
+    name: "Muscleblaze Biozyme Performance Whey",
     brand: "MuscleBlaze",
     category: "Whey Protein",
     ...PRICING.MB_BIO_1KG,
@@ -1231,7 +1231,7 @@ export const products: Product[] = [
   },
   {
     id: "50",
-    name: "MB Biozyme Whey Performance",
+    name: "Muscleblaze Biozyme Performance Whey",
     brand: "MuscleBlaze",
     category: "Whey Protein",
     ...PRICING.MB_BIO_2KG,
@@ -1252,7 +1252,7 @@ export const products: Product[] = [
   },
   {
     id: "290",
-    name: "MB BIOZYME WHEY REFILL PACK",
+    name: "Muscleblaze Biozyme Performance Whey Reffil Pack",
     brand: "MuscleBlaze",
     category: "Whey Protein",
     ...PRICING.MB_REFILL,
@@ -1275,7 +1275,7 @@ export const products: Product[] = [
   // ISOZERO
   {
     id: "51",
-    name: "MB Biozyme Whey Isozero",
+    name: "Muscleblaze Biozyme Iso-Zero",
     brand: "MuscleBlaze",
     category: "Whey Protein",
     ...PRICING.MB_ISOZ_1KG,
@@ -1296,7 +1296,7 @@ export const products: Product[] = [
   },
   {
     id: "52",
-    name: "MB Biozyme Whey Isozero",
+    name: "Muscleblaze Biozyme Iso-Zero",
     brand: "MuscleBlaze",
     category: "Whey Protein",
     ...PRICING.MB_ISOZ_2KG,
@@ -1317,7 +1317,7 @@ export const products: Product[] = [
   },
   {
     id: "53",
-    name: "MB Biozyme Whey Isozero",
+    name: "Muscleblaze Biozyme Iso-Zero",
     brand: "MuscleBlaze",
     category: "Whey Protein",
     ...PRICING.MB_ISOZ_1KG,
@@ -1338,7 +1338,7 @@ export const products: Product[] = [
   },
   {
     id: "54",
-    name: "MB Biozyme Whey Isozero",
+    name: "Muscleblaze Biozyme Iso-Zero",
     brand: "MuscleBlaze",
     category: "Whey Protein",
     ...PRICING.MB_ISOZ_2KG,
@@ -1361,7 +1361,7 @@ export const products: Product[] = [
   // MB PR
   {
     id: "55",
-    name: "MB Biozyme Whey PR",
+    name: "Muscleblaze Biozyme Performance Whey PR",
     brand: "MuscleBlaze",
     category: "Whey Protein",
     ...PRICING.MB_PR_1KG,
@@ -1382,7 +1382,7 @@ export const products: Product[] = [
   },
   {
     id: "56",
-    name: "MB Biozyme Whey PR",
+    name: "Muscleblaze Biozyme Performance Whey PR",
     brand: "MuscleBlaze",
     category: "Whey Protein",
     ...PRICING.MB_PR_2KG,
@@ -1403,7 +1403,7 @@ export const products: Product[] = [
   },
   {
     id: "57",
-    name: "MB Biozyme Whey PR",
+    name: "Muscleblaze Biozyme Performance Whey PR",
     brand: "MuscleBlaze",
     category: "Whey Protein",
     ...PRICING.MB_PR_1KG,
@@ -1424,7 +1424,7 @@ export const products: Product[] = [
   },
   {
     id: "58",
-    name: "MB Biozyme Whey PR",
+    name: "Muscleblaze Biozyme Performance Whey PR",
     brand: "MuscleBlaze",
     category: "Whey Protein",
     ...PRICING.MB_PR_2KG_S,
@@ -1699,7 +1699,7 @@ export const products: Product[] = [
   },
   {
     id: "71",
-    name: "Avvatar Isorich",
+    name: "Avvatar Isorich Protein",
     brand: "Avvatar",
     category: "Whey Protein",
     ...PRICING.AVVATAR_I_1KG,
@@ -1720,7 +1720,7 @@ export const products: Product[] = [
   },
   {
     id: "72",
-    name: "Avvatar Isorich",
+    name: "Avvatar Isorich Protein",
     brand: "Avvatar",
     category: "Whey Protein",
     ...PRICING.AVVATAR_I_2KG,
@@ -1741,7 +1741,7 @@ export const products: Product[] = [
   },
   {
     id: "73",
-    name: "Avvatar Isorich",
+    name: "Avvatar Isorich Protein",
     brand: "Avvatar",
     category: "Whey Protein",
     ...PRICING.AVVATAR_I_1KG,
@@ -1762,7 +1762,7 @@ export const products: Product[] = [
   },
   {
     id: "74",
-    name: "Avvatar Isorich",
+    name: "Avvatar Isorich Protein",
     brand: "Avvatar",
     category: "Whey Protein",
     ...PRICING.AVVATAR_I_2KG,
@@ -1783,7 +1783,7 @@ export const products: Product[] = [
   },
   {
     id: "75",
-    name: "Avvatar Isorich",
+    name: "Avvatar Isorich Protein",
     brand: "Avvatar",
     category: "Whey Protein",
     ...PRICING.AVVATAR_I_1KG,
@@ -1804,7 +1804,7 @@ export const products: Product[] = [
   },
   {
     id: "76",
-    name: "Avvatar Isorich",
+    name: "Avvatar Isorich Protein",
     brand: "Avvatar",
     category: "Whey Protein",
     ...PRICING.AVVATAR_I_2KG,
@@ -1827,7 +1827,7 @@ export const products: Product[] = [
   // FUELONE
   {
     id: "77",
-    name: "Fuelone Whey",
+    name: "Fuel One Whey Protein Powder",
     brand: "Fuelone",
     category: "Whey Protein",
     ...PRICING.FUELONE_1KG,
@@ -1848,7 +1848,7 @@ export const products: Product[] = [
   },
   {
     id: "78",
-    name: "Fuelone Whey",
+    name: "Fuel One Whey Protein Powder",
     brand: "Fuelone",
     category: "Whey Protein",
     ...PRICING.FUELONE_2KG,
@@ -1871,7 +1871,7 @@ export const products: Product[] = [
   // ATOM
   {
     id: "79",
-    name: "Attom Whey",
+    name: "ATOM Whey Protein",
     brand: "Attom",
     category: "Whey Protein",
     ...PRICING.ATOM_1KG,
@@ -1892,7 +1892,7 @@ export const products: Product[] = [
   },
   {
     id: "80",
-    name: "Attom Whey",
+    name: "ATOM Whey Protein",
     brand: "Attom",
     category: "Whey Protein",
     ...PRICING.ATOM_2KG,
@@ -1913,7 +1913,7 @@ export const products: Product[] = [
   },
   {
     id: "81",
-    name: "Attom Whey",
+    name: "ATOM Whey Protein",
     brand: "Attom",
     category: "Whey Protein",
     ...PRICING.ATOM_1KG,
@@ -1934,7 +1934,7 @@ export const products: Product[] = [
   },
   {
     id: "82",
-    name: "Attom Whey",
+    name: "ATOM Whey Protein",
     brand: "Attom",
     category: "Whey Protein",
     ...PRICING.ATOM_2KG,
@@ -1957,7 +1957,7 @@ export const products: Product[] = [
   // MORPHEN
   {
     id: "83",
-    name: "Morphenlab Turbo Whey",
+    name:"Dr. Morepen Turbo Whey Protein",
     brand: "Morphenlab",
     category: "Whey Protein",
     ...PRICING.MORPH_T_1KG,
@@ -1978,7 +1978,7 @@ export const products: Product[] = [
   },
   {
     id: "84",
-    name: "Morphenlab Whey Protein",
+    name: "Dr. Morepen Turbo Whey Protein",
     brand: "Morphenlab",
     category: "Whey Protein",
     ...PRICING.MORPH_W_2KG,
@@ -2001,7 +2001,7 @@ export const products: Product[] = [
   // ABSOLUTE
   {
     id: "85",
-    name: "Absolute Whey Legender",
+    name: "Absolute Whey Legender (Alpha Series)",
     brand: "Absolute",
     category: "Whey Protein",
     ...PRICING.ABS_1KG,
@@ -2022,7 +2022,7 @@ export const products: Product[] = [
   },
   {
     id: "86",
-    name: "Absolute Whey Legender",
+    name: "Absolute Whey Legender (Alpha Series)",
     brand: "Absolute",
     category: "Whey Protein",
     ...PRICING.ABS_2KG,
@@ -2043,7 +2043,7 @@ export const products: Product[] = [
   },
   {
     id: "87",
-    name: "Absolute Whey Legender",
+    name: "Absolute Whey Legender (Alpha Series)",
     brand: "Absolute",
     category: "Whey Protein",
     ...PRICING.ABS_1KG,
@@ -2064,7 +2064,7 @@ export const products: Product[] = [
   },
   {
     id: "88",
-    name: "Absolute Whey Legender",
+    name: "Absolute Whey Legender (Alpha Series)",
     brand: "Absolute",
     category: "Whey Protein",
     ...PRICING.ABS_2KG,
