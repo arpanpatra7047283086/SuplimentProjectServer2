@@ -72,7 +72,7 @@ export function ProductCard({ product }: ProductCardProps) {
               )}
             </div>
             <p className="text-xs text-muted-foreground mt-1">
-              {product.flavors[0].name} • {product.weights[0]}
+              {product.flavors[0].name} • {product.weight || product.weights[0]}
             </p>
           </div>
         </CardContent>
