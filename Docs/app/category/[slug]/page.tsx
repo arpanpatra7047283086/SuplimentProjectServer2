@@ -158,7 +158,7 @@ export default function CategoryPage() {
 
           {/* Product Grid */}
           <div className="flex-1">
-            <ProductGrid category={category} selectedBrands={selectedBrands} />
+            <ProductGrid category={category} selectedBrands={selectedBrands} shuffle={true} />
           </div>
         </div>
       </main>
