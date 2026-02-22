@@ -22,9 +22,9 @@ try:
 
     # 🔍 Test connection
     client.admin.command("ping")
-    print("✅ MongoDB connected successfully")
+    print("MongoDB connected successfully")
 
     db = client["sssuppliment_db"]
 
 except Exception as e:
-    print("❌ MongoDB connection failed:", e)
+    print("MongoDB connection failed:", e)

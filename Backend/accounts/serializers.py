@@ -87,10 +87,10 @@ class SignupSerializer(serializers.Serializer):
                 return user  # can't refer yourself
 
             referrer_pts = getattr(
-                settings, "REFERRAL_POINTS_FOR_REFERRER", 4
+                settings, "REFERRAL_POINTS_FOR_REFERRER", 100
             )
             referee_pts = getattr(
-                settings, "REFERRAL_POINTS_FOR_REFEREE", 2
+                settings, "REFERRAL_POINTS_FOR_REFEREE", 50
             )
 
             # Award points

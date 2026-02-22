@@ -24,7 +24,7 @@ ALLOWED_HOSTS = [
     "localhost",
     "127.0.0.1",
 ]
-
+DATABASES = {}
 # ---------------------------------------------------------------------------
 # Applications
 # ---------------------------------------------------------------------------
@@ -149,14 +149,23 @@ REST_FRAMEWORK = {
         "rest_framework.permissions.AllowAny",
     ),
 }
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': [
+        'rest_framework_simplejwt.authentication.JWTAuthentication',  
+        'rest_framework.authentication.SessionAuthentication',
+    ],
+    'DEFAULT_PERMISSION_CLASSES': [
+        'rest_framework.permissions.IsAuthenticated',
+    ],
+}
 
 # ---------------------------------------------------------------------------
 # JWT
 # ---------------------------------------------------------------------------
 
 SIMPLE_JWT = {
-    "ACCESS_TOKEN_LIFETIME": timedelta(days=1),
-    "REFRESH_TOKEN_LIFETIME": timedelta(days=7),
+    'ACCESS_TOKEN_LIFETIME': timedelta(hours=24),    
+    'REFRESH_TOKEN_LIFETIME': timedelta(days=7),
     "ROTATE_REFRESH_TOKENS": True,
     "AUTH_HEADER_TYPES": ("Bearer",),
 }
@@ -165,8 +174,8 @@ SIMPLE_JWT = {
 # Referral Points
 # ---------------------------------------------------------------------------
 
-REFERRAL_POINTS_FOR_REFERRER = 4
-REFERRAL_POINTS_FOR_REFEREE = 2
+REFERRAL_POINTS_FOR_REFERRER = 100
+REFERRAL_POINTS_FOR_REFEREE = 50
 
 # ---------------------------------------------------------------------------
 # Internationalization / Static
@@ -201,3 +210,19 @@ SECRET_KEY = os.getenv("SECRET_KEY")
 REST_FRAMEWORK = {
     "DEFAULT_AUTHENTICATION_CLASSES": [],
 }
+
+
+
+
+
+# ==================== EMAIL SETTINGS ====================
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_PORT = 587
+EMAIL_USE_TLS = True
+EMAIL_HOST_USER = 'sssuppliment2025@gmail.com'        # ← YOUR GMAIL
+EMAIL_HOST_PASSWORD = 'komp phxt crhh ermr'      # ← NOT normal password!
+DEFAULT_FROM_EMAIL = 'sssuppliment2025@gmail.com'
+
+# Optional - Server emails (error reports)
+SERVER_EMAIL = 'sssuppliment2025@gmail.com'

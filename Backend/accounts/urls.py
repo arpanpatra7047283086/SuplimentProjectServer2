@@ -9,8 +9,16 @@ urlpatterns = [
     path("signup/", views.SignupView.as_view(), name="signup"),
     path("login/", views.LoginView.as_view(), name="login"),
     path("token/refresh/", TokenRefreshView.as_view(), name="token_refresh"),
-    # Profile & referrals
     path("profile/", views.ProfileView.as_view(), name="profile"),
     path("referrals/", views.MyReferralsView.as_view(), name="my_referrals"),
     path("leaderboard/", views.LeaderboardView.as_view(), name="leaderboard"),
+    path('profileForOrderPlaced/', views.profile_view, name='profile'),
+    path('orders/', views.create_order, name='create_order'),
+
+    path('auth/forgot-password/', views.forgot_password, name='forgot_password'),
+    path('auth/verify-otp/', views.verify_otp, name='verify_otp'),
+    path('auth/reset-password/', views.reset_password, name='reset_password'),
+
+    path('profileForAccount/', views.ProfileForAccountView.as_view(), name='profile-account'),           
+    path('auth/change-password/', views.ChangePasswordView.as_view(), name='change-password'),            
 ]

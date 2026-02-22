@@ -109,7 +109,7 @@ REST_FRAMEWORK = {
 }
 
 SIMPLE_JWT = {
-    "ACCESS_TOKEN_LIFETIME": timedelta(days=1),
+    "ACCESS_TOKEN_LIFETIME": timedelta(hours=24),
     "REFRESH_TOKEN_LIFETIME": timedelta(days=7),
     "ROTATE_REFRESH_TOKENS": True,
     "AUTH_HEADER_TYPES": ("Bearer",),
@@ -132,8 +132,8 @@ CORS_ALLOW_CREDENTIALS = True
 # Referral Points Configuration
 # ---------------------------------------------------------------------------
 
-REFERRAL_POINTS_FOR_REFERRER = 4   # Points the person who shares the link gets
-REFERRAL_POINTS_FOR_REFERRED = 2   # Points the new user who signs up gets
+REFERRAL_POINTS_FOR_REFERRER = 100   # Points the person who shares the link gets
+REFERRAL_POINTS_FOR_REFERRED = 50   # Points the new user who signs up gets
 
 
 # ---------------------------------------------------------------------------
@@ -149,3 +149,47 @@ STATIC_URL = "static/"
 STATIC_ROOT = BASE_DIR / "staticfiles"
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
+
+
+
+
+import os
+from dotenv import load_dotenv
+load_dotenv()
+
+
+MONGO_URI = os.getenv("MONGO_URI")
+MONGO_DB_NAME = os.getenv("MONGO_DB_NAME")
+
+
+SECRET_KEY = os.getenv("SECRET_KEY")
+
+REST_FRAMEWORK = {
+    "DEFAULT_AUTHENTICATION_CLASSES": [],
+}
+
+
+
+from decouple import config
+
+# 🔥 PRIMARY: Gmail SMTP (Local/Render Paid)
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = config('EMAIL_HOST', default='smtp.gmail.com')
+EMAIL_PORT = config('EMAIL_PORT', default=587, cast=int)
+EMAIL_USE_TLS = config('EMAIL_USE_TLS', default=True, cast=bool)
+EMAIL_HOST_USER = config('EMAIL_HOST_USER', default='sssuppliment2025@gmail.com')
+EMAIL_HOST_PASSWORD = config('EMAIL_HOST_PASSWORD', default='komp phxt crhh ermr')
+DEFAULT_FROM_EMAIL = config('DEFAULT_FROM_EMAIL', default='sssuppliment2025@gmail.com')
+
+# 🔥 BACKUP: SendGrid API Key (Render FREE + High Limits)
+SENDGRID_API_KEY = config('SENDGRID_API_KEY', default='SG.your-sendgrid-key')
+
+# 🔥 SMS: Fast2SMS (India - ₹0.10/SMS)
+FAST2SMS_KEY = config('FAST2SMS_KEY', default='your-fast2sms-key')
+
+# 🔥 FAILOVER: Enable Dual System
+DUAL_EMAIL_FAILOVER = config('DUAL_EMAIL_FAILOVER', default=True, cast=bool)
+
+# 🔥 Email Logging (Debug)
+EMAIL_LOGGING_ENABLED = config('EMAIL_LOGGING_ENABLED', default=False, cast=bool)
+
