@@ -20,7 +20,7 @@ SECRET_KEY = os.environ.get(
 DEBUG = os.environ.get("DJANGO_DEBUG", "False").lower() in ("true", "1", "yes")
 
 ALLOWED_HOSTS = [
-    "ss-supplement-website.onrender.com",
+    "suplimentprojectserver2.onrender.com",
     "localhost",
     "127.0.0.1",
 ]
