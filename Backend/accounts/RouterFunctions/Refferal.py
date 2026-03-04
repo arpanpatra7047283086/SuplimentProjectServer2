@@ -45,6 +45,8 @@ def get_my_referrals(auth_header: str):
                 "referee_phone": referee_data.get("phone", ""),
                 "referrer_points": r.get("referrer_points", 0),
                 "referee_points": r.get("referee_points", 0),
+                "referrer_points_awarded": r.get("referrer_points", 0),
+                "referee_points_awarded": r.get("referee_points", 0),
                 "created_at": r.get("created_at", "")
             })
         

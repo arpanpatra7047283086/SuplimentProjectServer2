@@ -6,6 +6,10 @@ from bson import ObjectId
 from bson.errors import InvalidId
 from utils.jwt import generate_tokens_for_user
 
+
+def _generate_referral_code():
+    return f"SS{ObjectId().__str__()[-8:].upper()}"
+
 def signup_logic(data, phone, password, name, email, referral_code):
     """
     FIXED: Always returns tuple (user_id, user, tokens)
@@ -40,9 +44,16 @@ def signup_logic(data, phone, password, name, email, referral_code):
         user_id = str(result.inserted_id)
         print(f"User created: {user_id}")
 
+        # Ensure every user has a permanent referral code
+        referral_code_generated = _generate_referral_code()
+        users_col.update_one(
+            {"_id": ObjectId(user_id)},
+            {"$set": {"referral_code": referral_code_generated}, "$currentDate": {"updated_at": True}},
+        )
+
         if referral_code:
             try:
-                referrer = users_col.find_one({"referral_code": referral_code}) 
+                referrer = users_col.find_one({"referral_code": referral_code})
                 if not referrer:
                     referrer = users_col.find_one({"_id": ObjectId(referral_code)})
                 

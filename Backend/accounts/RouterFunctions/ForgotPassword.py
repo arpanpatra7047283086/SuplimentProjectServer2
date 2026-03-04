@@ -6,8 +6,8 @@ from datetime import datetime, timedelta
 
 
 def FPassword(request):
-    phone = request.data.get('phone', '').strip()
-    email = request.data.get('email', '').strip()
+    phone = str(request.data.get('phone', '')).strip()
+    email = str(request.data.get('email', '')).strip().lower()
     if not phone or not email:
         return Response({
             "success": False, 
@@ -15,28 +15,18 @@ def FPassword(request):
         }, status=status.HTTP_400_BAD_REQUEST)
 
     # Find user
-    user_data = users_col.find_one({
-        '$or': [{'phone': phone}, {'email': email}]
-    })
+    user_data = users_col.find_one({'phone': phone, 'email': email})
     
     print(f"USER FOUND: {user_data is not None}")
 
     if not user_data:
         return Response({
-            "success": True,
-            "message": "If account exists, OTP sent to your email",
-            "data": {
-                "name": "User",
-                "phone": phone,
-                "email": email,
-                "otp": "XXXXX"  
-            }
-        }, status=status.HTTP_200_OK)
+            "success": False,
+            "error": "No user found with this phone and email"
+        }, status=status.HTTP_404_NOT_FOUND)
 
     
-    otps_col.delete_many({
-        '$or': [{'phone': phone}, {'email': email}]
-    })
+    otps_col.delete_many({'phone': phone, 'email': email})
 
     
     otp_code = str(secrets.randbelow(900000) + 100000)

@@ -6,6 +6,7 @@ from . import views
 
 urlpatterns = [
     path("wake-up/", views.wake_up, name="wake_up"),
+    path("products-public/", views.products_public, name="products_public"),
     path("signup/", views.SignupView.as_view(), name="signup"),
     path("login/", views.LoginView.as_view(), name="login"),
     path("token/refresh/", TokenRefreshView.as_view(), name="token_refresh"),
@@ -13,6 +14,7 @@ urlpatterns = [
     path("referrals/", views.MyReferralsView.as_view(), name="my_referrals"),
     path("leaderboard/", views.LeaderboardView.as_view(), name="leaderboard"),
     path('profileForOrderPlaced/', views.profile_view, name='profile'),
+    path('orders/quote/', views.order_quote, name='order_quote'),
     path('orders/', views.create_order, name='create_order'),
 
     path('auth/forgot-password/', views.forgot_password, name='forgot_password'),

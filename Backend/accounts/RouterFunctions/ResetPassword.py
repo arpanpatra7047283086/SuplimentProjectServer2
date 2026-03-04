@@ -19,7 +19,8 @@ def RPassword(request, otps_col, users_col, hash_password):
         return Response({"success": False, "error": "Password must be 6+ characters"}, status=400)
 
     otp_doc = otps_col.find_one({
-        '$or': [{'phone': phone, 'email': email}, {'phone': phone}, {'email': email}],
+        'phone': phone,
+        'email': email,
         'otp': otp_code,
         'is_used': True,
         'expires_at': {'$gt': datetime.now()}
@@ -30,7 +31,7 @@ def RPassword(request, otps_col, users_col, hash_password):
 
     hashed_password = hash_password(new_password)
     result = users_col.update_one(
-        {'$or': [{'phone': phone}, {'email': email}]},
+        {'phone': phone, 'email': email},
         {'$set': {'password': hashed_password}}
     )
     

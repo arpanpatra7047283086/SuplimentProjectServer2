@@ -29,13 +29,14 @@ from datetime import datetime, timedelta
 from mongo.collections import users_col, otps_col
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.decorators import api_view, permission_classes
+from .db import get_products_collection
 
 
 from .RouterFunctions.Signup import signup_logic
 from .RouterFunctions.login import LoginLogic
 from .RouterFunctions.ProfileShowForRefferPoint import ProfileForRefferal
 from .RouterFunctions.Refferal import get_my_referrals
-from .RouterFunctions.CreateUserOrder import CreateOrderUser
+from .RouterFunctions.CreateUserOrder import CreateOrderUser, calculate_order_quote, get_user_id_from_auth
 from .RouterFunctions.ForgotPassword import FPassword
 from .RouterFunctions.ResetPassword import RPassword
 from .RouterFunctions.VerifyOTP import VOtp
@@ -266,6 +267,27 @@ def wake_up(request):
     return JsonResponse({"status": "backend awake"})
 
 
+@api_view(['GET'])
+@permission_classes([AllowAny])
+def products_public(request):
+    """Public read-only products endpoint for frontend runtime sync."""
+    try:
+        collection = get_products_collection()
+        products = list(collection.find({}))
+        for product in products:
+            if "_id" in product:
+                product["_id"] = str(product["_id"])
+            if "id" in product:
+                product["id"] = str(product["id"])
+
+        return Response({"success": True, "data": products}, status=status.HTTP_200_OK)
+    except Exception as exc:
+        return Response(
+            {"success": False, "data": [], "error": str(exc)},
+            status=status.HTTP_503_SERVICE_UNAVAILABLE,
+        )
+
+
 # .............................................. SIGNUP ...............................................
 class SignupView(APIView):
     permission_classes = [AllowAny]
@@ -360,7 +382,8 @@ class ProfileView(APIView):
                 "phone": user["phone"],
                 "email": user.get("email"),
                 "points": user.get("points", 0),
-                "referral_code": str(user["_id"]),
+                "referral_code": user.get("referral_code") or str(user["_id"]),
+                "total_referrals": referrals_col.count_documents({"referrer_id": str(user["_id"])}),
             })
         except Exception as e:
             print("PROFILE ERROR:", e)
@@ -406,6 +429,50 @@ from rest_framework.decorators import api_view
 from rest_framework.response import Response
 
 @api_view(['POST'])
+def order_quote(request):
+    try:
+        auth_header = request.headers.get('Authorization')
+        data = request.data
+
+        if not auth_header or not auth_header.startswith('Bearer '):
+            return Response({'error': 'Token required'}, status=401)
+
+        user_id = get_user_id_from_auth(auth_header)
+        user = users_col.find_one({"_id": ObjectId(user_id)})
+        if not user:
+            return Response({'error': 'User not found'}, status=404)
+
+        items = data.get("items", [])
+        use_coins = bool(data.get("use_coins", False))
+        quote = calculate_order_quote(items, user.get("points", 0), use_coins=use_coins)
+
+        return Response(
+            {
+                "success": True,
+                "data": {
+                    "points": user.get("points", 0),
+                    "items_subtotal": quote["items_subtotal"],
+                    "shipping_fee": quote["shipping_fee"],
+                    "is_free_shipping": quote["is_free_shipping"],
+                    "cart_total_with_shipping": quote["cart_total"],
+                    "max_coins_allowed": quote["max_coins_allowed"],
+                    "coins_used": quote["coins_used"],
+                    "coin_discount": quote["coin_discount_value"],
+                    "final_total": quote["final_total"],
+                    "coin_value": quote["coin_value"],
+                    "coin_percent": quote["coin_percent"],
+                    "earned_points": quote["earned_points"],
+                },
+            },
+            status=200,
+        )
+    except ValueError as ve:
+        return Response({'error': str(ve)}, status=400)
+    except Exception as e:
+        return Response({'error': str(e)}, status=500)
+
+
+@api_view(['POST'])
 def create_order(request):
     try:
         auth_header = request.headers.get('Authorization')
@@ -414,7 +481,7 @@ def create_order(request):
         if not auth_header or not auth_header.startswith('Bearer '):
             return Response({'error': 'Token required'}, status=401)
         
-        order_id, earned_points, new_points = CreateOrderUser(
+        order_id, earned_points, new_points, quote = CreateOrderUser(
             auth_header, 
             data, 
             users_col, 
@@ -426,7 +493,15 @@ def create_order(request):
         return Response({
             'order': {
                 'id': order_id,
-                'earnedPoints': earned_points  
+                'earnedPoints': earned_points,
+                'summary': {
+                    'items_subtotal': quote["items_subtotal"],
+                    'shipping_fee': quote["shipping_fee"],
+                    'cart_total_with_shipping': quote["cart_total"],
+                    'coins_used': quote["coins_used"],
+                    'coin_discount': quote["coin_discount_value"],
+                    'final_total': quote["final_total"],
+                }
             },
             'earnedPoints': earned_points,  
             'user': {
