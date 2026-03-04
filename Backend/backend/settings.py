@@ -84,7 +84,7 @@ CORS_ALLOW_CREDENTIALS = True
 CSRF_TRUSTED_ORIGINS = [
     "https://www.sssupplement.com",
     "https://ss-supplement-website.vercel.app",
-    "https://ss-supplement-website.onrender.com",
+    "https://suplimentprojectserver2.onrender.com",
 ]
 
 CSRF_COOKIE_SECURE = True
